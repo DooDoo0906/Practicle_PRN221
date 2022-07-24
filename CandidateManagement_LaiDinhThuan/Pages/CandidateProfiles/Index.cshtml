@@ -1,0 +1,94 @@
+﻿@page
+@model CandidateManagement_LaiDinhThuan.Pages.CandidateProfiles.IndexModel
+
+@if (HttpContextAccessor.HttpContext.Session.GetString("name") == null)
+{
+    <h1>You are not allow to do this function. Please <a asp-area="" asp-page="/Index">Login</a></h1>
+
+}
+else
+{
+
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    @if (HttpContextAccessor.HttpContext.Session.GetInt32("role") == 2)
+    {
+        <p>
+            <a asp-page="Create">Create New</a>
+        </p>
+    }
+    <form asp-page="./Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Find by name:
+                <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+                <input type="submit" value="Search" class="btn btn-primary" /> |
+                <a asp-page="./Index">Back to full List</a>
+            </p>
+        </div>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Candidates[0].Fullname)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Candidates[0].Birthday)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Candidates[0].ProfileShortDescription)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Candidates[0].ProfileUrl)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Candidates)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fullname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Birthday)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProfileShortDescription)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProfileShortDescription)
+                    </td>
+                    @if (HttpContextAccessor.HttpContext.Session.GetInt32("role") ==2)
+                    {
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item.CandidateId">Edit</a> |
+                            <a asp-page="./Details" asp-route-id="@item.CandidateId">Details</a> |
+                            <a asp-page="./Delete" asp-route-id="@item.CandidateId">Delete</a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    var prevDisabled = !Model.Candidates.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Candidates.HasNextPage ? "disabled" : "";
+    <a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Candidates.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+        Previous
+    </a>
+    <a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Candidates.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+        Next
+    </a>
+}
